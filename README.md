@@ -1,8 +1,4 @@
 racket-handin-client
 ====================
 
-my racket handin client(s). 
-
-I'm using a different branch for each class.
-
-A bit silly to put on github, but it simplifies distribution....
+DON'T USE THE MASTER BRANCH of this repository. There's a different branch for each class.
