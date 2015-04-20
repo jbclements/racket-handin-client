@@ -3,7 +3,7 @@
 (require openssl/mzssl "this-collection.rkt")
 
 (provide handin-connect
-         handin-disconnect
+         handin-disconnect!
          retrieve-user-fields
          retrieve-active-assignments
          submit-assignment
@@ -12,6 +12,7 @@
          submit-info-change
          retrieve-user-info)
 
+;; represents a handin connection, containing two ports
 (define-struct handin (r w))
 
 ;; errors to the user: no need for a "foo: " prefix
@@ -22,31 +23,16 @@
   (for ([x (in-list xs)]) (write x port) (newline port))
   (flush-output port))
 
-(define (close-handin-ports h)
+;; close both ports associated with a handin
+(define (close-handin-ports! h)
   (close-input-port (handin-r h))
   (close-output-port (handin-w h)))
 
-(define (wait-for-ok r who . reader)
-  (let ([v (if (pair? reader) ((car reader)) (read r))])
-    (unless (eq? v 'ok) (error* "~a error: ~a" who v))))
+;; given a value, ensure that it is 'ok.
+(define (ensure-ok v who)
+  (unless (eq? v 'ok) (error* "~a error: ~a" who v)))
 
-;; ssl connection, makes a readable error message if no connection
-(define (connect-to server port)
-  (define pem (in-this-collection "server-cert.pem"))
-  (define ctx (ssl-make-client-context))
-  (ssl-set-verify! ctx #t)
-  (ssl-load-verify-root-certificates! ctx pem)
-  (with-handlers
-      ([exn:fail:network?
-        (lambda (e)
-          (let* ([msg
-                  "handin-connect: could not connect to the server (~a:~a)"]
-                 [msg (format msg server port)]
-                 #; ; un-comment to get the full message too
-                 [msg (string-append msg " (" (exn-message e) ")")])
-            (raise (make-exn:fail:network msg (exn-continuation-marks e)))))])
-    (ssl-connect server port ctx)))
-
+;; create a handin connection to the given server and port
 (define (handin-connect server port)
   (let-values ([(r w) (connect-to server port)])
     (write+flush w 'handin)
@@ -63,20 +49,44 @@
     ;; Return connection:
     (make-handin r w)))
 
-(define (handin-disconnect h)
-  (write+flush (handin-w h) 'bye)
-  (close-handin-ports h))
+;; ssl connection, makes a readable error message if no connection
+;; given a server and a port, returns an input and output port
+(define (connect-to server port)
+  (define pem (in-this-collection "server-cert.pem"))
+  (define ctx (ssl-make-client-context))
+  (ssl-set-verify! ctx #t)
+  (ssl-load-verify-root-certificates! ctx pem)
+  (with-handlers
+      ([exn:fail:network?
+        (lambda (e)
+          (let* ([msg
+                  "handin-connect: could not connect to the server (~a:~a)"]
+                 [msg (format msg server port)]
+                 #; ; un-comment to get the full message too
+                 [msg (string-append msg " (" (exn-message e) ")")])
+            (raise (make-exn:fail:network msg (exn-continuation-marks e)))))])
+    (ssl-connect server port ctx)))
 
+;; disconnect a handin connection
+(define (handin-disconnect! h)
+  (write+flush (handin-w h) 'bye)
+  (close-handin-ports! h))
+
+;; given a handin connection, retrieve a list of
+;; strings representing the user fields, then
+;; close the handin connection
 (define (retrieve-user-fields h)
   (let ([r (handin-r h)] [w (handin-w h)])
     (write+flush w 'get-user-fields 'bye)
     (let ([v (read r)])
       (unless (and (list? v) (andmap string? v))
         (error* "failed to get user-fields list from server"))
-      (wait-for-ok r "get-user-fields")
-      (close-handin-ports h)
+      (ensure-ok (read r) "get-user-fields")
+      (close-handin-ports! h)
       v)))
 
+;; given a handin connection, retrieve a list
+;; of strings representing the active assignments
 (define (retrieve-active-assignments h)
   (let ([r (handin-r h)] [w (handin-w h)])
     (write+flush w 'get-active-assignments)
@@ -85,11 +95,18 @@
         (error* "failed to get active-assignment list from server"))
       v)))
 
+;; given a handin connection, a username, a password, an assignment name,
+;; the buffer content bytes, a thunk to be called on success, a message
+;; display handler, a message-final display handler, and a message-box
+;; display handler, submit the assignment.
 (define (submit-assignment h username passwd assignment content
                            on-commit message message-final message-box)
   (let ([r (handin-r h)] [w (handin-w h)])
+    ;; a mini-event loop, handling messages from the current-input-port
+    ;; until we get one that's not a message (in which case it's returned).
     (define (read/message)
       (let ([v (read r)])
+        ;; invoke the appropriate handler (or return if it's not a message)
         (case v
           [(message) (message (read r)) (read/message)]
           [(message-final) (message-final (read r)) (read/message)]
@@ -101,7 +118,7 @@
       'set 'password   passwd
       'set 'assignment assignment
       'save-submission)
-    (wait-for-ok r "login")
+    (ensure-ok (read r) "login")
     (write+flush w (bytes-length content))
     (let ([v (read r)])
       (unless (eq? v 'go) (error* "upload error: ~a" v)))
@@ -110,15 +127,15 @@
     (flush-output w)
     ;; during processing, we're waiting for 'confirm, in the meanwhile, we
     ;; can get a 'message or 'message-box to show -- after 'message we expect
-    ;; a string to show using the `messenge' argument, and after 'message-box
+    ;; a string to show using the `message' argument, and after 'message-box
     ;; we expect a string and a style-list to be used with `message-box' and
     ;; the resulting value written back
     (let ([v (read/message)])
       (unless (eq? 'confirm v) (error* "submit error: ~a" v)))
     (on-commit)
     (write+flush w 'check)
-    (wait-for-ok r "commit" read/message)
-    (close-handin-ports h)))
+    (ensure-ok (read/message) "commit")
+    (close-handin-ports! h)))
 
 (define (retrieve-assignment h username passwd assignment)
   (let ([r (handin-r h)] [w (handin-w h)])
@@ -131,8 +148,8 @@
       (unless (and (number? len) (integer? len) (positive? len))
         (error* "bad response from server: ~a" len))
       (let ([buf (begin (regexp-match #rx"[$]" r) (read-bytes len r))])
-        (wait-for-ok r "get-submission")
-        (close-handin-ports h)
+        (ensure-ok (read r) "get-submission")
+        (close-handin-ports! h)
         buf))))
 
 (define (submit-addition h username passwd user-fields)
@@ -142,8 +159,8 @@
       'set 'password    passwd
       'set 'user-fields user-fields
       'create-user)
-    (wait-for-ok r "create-user")
-    (close-handin-ports h)))
+    (ensure-ok (read r) "create-user")
+    (close-handin-ports! h)))
 
 (define (submit-info-change h username old-passwd new-passwd user-fields)
   (let ([r (handin-r h)]
@@ -154,8 +171,8 @@
       'set 'new-password new-passwd
       'set 'user-fields  user-fields
       'change-user-info)
-    (wait-for-ok r "change-user-info")
-    (close-handin-ports h)))
+    (ensure-ok (read r) "change-user-info")
+    (close-handin-ports! h)))
 
 (define (retrieve-user-info h username passwd)
   (let ([r (handin-r h)] [w (handin-w h)])
@@ -166,6 +183,6 @@
     (let ([v (read r)])
       (unless (and (list? v) (andmap string? v))
         (error* "failed to get user-info list from server"))
-      (wait-for-ok r "get-user-info")
-      (close-handin-ports h)
+      (ensure-ok (read r) "get-user-info")
+      (close-handin-ports! h)
       v)))

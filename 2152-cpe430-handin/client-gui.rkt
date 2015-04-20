@@ -312,7 +312,7 @@
                                 => (lambda (r) (- (length l) (length r)))]
                                [else 0])])
                  (when (null? l)
-                   (handin-disconnect h)
+                   (handin-disconnect! h)
                    (error 'handin "there are no active assignments"))
                  (set! connection h)
                  (for ([assign (in-list l)]) (send assignment append assign))
