@@ -1,16 +1,21 @@
 #lang racket/base
 
-(require openssl/mzssl "this-collection.rkt")
+(require racket/contract openssl/mzssl "this-collection.rkt")
 
-(provide handin-connect
-         handin-disconnect!
-         retrieve-user-fields
-         retrieve-active-assignments
-         submit-assignment
-         retrieve-assignment
-         submit-addition
-         submit-info-change
-         retrieve-user-info)
+(provide
+ (contract-out
+  [handin-connect (-> string? (integer-in 1 65535) handin?)]
+  [handin-disconnect! (-> handin? void?)]
+  [retrieve-user-fields (-> handin? (listof string?))]
+  [retrieve-active-assignments (-> handin? (listof string?))]
+  [submit-assignment (-> handin? string? string? string? bytes?
+                         (-> any)
+                         (-> any/c any) (-> any/c any) (-> any/c any/c any)
+                         void?)]
+  [retrieve-assignment (-> handin? string? string? string? bytes?)]
+  [submit-addition (-> handin? string? string? (listof string?) void?)]
+  [submit-info-change (-> handin? string? string? string? (listof string?) void?)]
+  [retrieve-user-info (-> handin? string? string? (listof string?))]))
 
 ;; represents a handin connection, containing two ports
 (define-struct handin (r w))
@@ -23,7 +28,7 @@
   (for ([x (in-list xs)]) (write x port) (newline port))
   (flush-output port))
 
-;; close both ports associated with a handin
+;; close both ports associated with a handin, return void
 (define (close-handin-ports! h)
   (close-input-port (handin-r h))
   (close-output-port (handin-w h)))
@@ -98,7 +103,7 @@
 ;; given a handin connection, a username, a password, an assignment name,
 ;; the buffer content bytes, a thunk to be called on success, a message
 ;; display handler, a message-final display handler, and a message-box
-;; display handler, submit the assignment.
+;; display handler, submit the assignment and close the handin connection
 (define (submit-assignment h username passwd assignment content
                            on-commit message message-final message-box)
   (let ([r (handin-r h)] [w (handin-w h)])
@@ -137,6 +142,9 @@
     (ensure-ok (read/message) "commit")
     (close-handin-ports! h)))
 
+;; given a handin connection, a username, a password, and an assignment name,
+;; return a byte string containing the retrieved assignment and close the
+;; handin connection.
 (define (retrieve-assignment h username passwd assignment)
   (let ([r (handin-r h)] [w (handin-w h)])
     (write+flush w
@@ -152,6 +160,8 @@
         (close-handin-ports! h)
         buf))))
 
+;; given a handin connection, a username, a password, and user fields,
+;; create the user and close the handin connection.
 (define (submit-addition h username passwd user-fields)
   (let ([r (handin-r h)] [w (handin-w h)])
     (write+flush w
@@ -162,6 +172,9 @@
     (ensure-ok (read r) "create-user")
     (close-handin-ports! h)))
 
+;; given a handin connection, a username, an old password, a new password,
+;; and user fields, update the user's information and close the handin
+;; connection
 (define (submit-info-change h username old-passwd new-passwd user-fields)
   (let ([r (handin-r h)]
         [w (handin-w h)])
@@ -174,6 +187,8 @@
     (ensure-ok (read r) "change-user-info")
     (close-handin-ports! h)))
 
+;; given a handin connection, a username, and a password, return a list
+;; of strings representing the user's info and close the handin connection.
 (define (retrieve-user-info h username passwd)
   (let ([r (handin-r h)] [w (handin-w h)])
     (write+flush w
