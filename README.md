@@ -1,4 +1,5 @@
 racket-handin-client
 ====================
 
-DON'T USE THE MASTER BRANCH of this repository. There's a different branch for each class.
+There's a different branch for each class. Honestly, tags might be a better
+mechanism here.
