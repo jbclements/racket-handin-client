@@ -708,7 +708,9 @@
 
 (define handin-icon (scale-by-half (in-this-collection "icon.png")))
 
-(define (editors->string editors)
+;; given a list of editors, return a byte string encoding them for
+;; submission to the handin server
+(define (editors->bytes editors)
   (let* ([base (make-object editor-stream-out-bytes-base%)]
          [stream (make-object editor-stream-out% base)])
     (write-editor-version stream base)
@@ -792,7 +794,7 @@
                [parent client-panel]
                [callback
                 (lambda (button)
-                  (let ([content (editors->string
+                  (let ([content (editors->bytes
                                   (list (get-definitions-text)
                                         (get-interactions-text)))])
                     (new handin-frame%
