@@ -39,40 +39,48 @@
 
 (define encoded-bytes
   (file->encoded-string
-   "/Users/clements/430/Solutions/Program4/a4-tr-onefile-solution.rkt"))
+   "/Users/clements/430/Grading/Program4/shuffled-26/handin-text.rkt"
+   #;"/Users/clements/430/Solutions/Program4/a4-tr-onefile-solution.rkt"))
 
 ;; given a unique
 (define (run-submit)
   (define handin (handin-connect host port))
   (define channel (make-async-channel))
-  (define (mk-cbk label)
-    (λ args (async-channel-put channel (cons label args))))
   (define t (current-inexact-milliseconds))
-  (with-handlers
-      ([exn:fail? (λ (exn)
-                    (list 'exn
-                          (- (current-inexact-milliseconds) t)
-                          (exn-message exn)))])  
-    (submit-assignment handin
-                       uid
-                       password
-                       "Program4"
-                       encoded-bytes
-                       (mk-cbk 'success)
-                       (mk-cbk 'message)
-                       (mk-cbk 'message-final)
-                       (mk-cbk 'message-box))
-    (define time (- (current-inexact-milliseconds) t))
-    ;; drain all messages from the async-channel:
-    (define messages
-      (let loop ()
-        (define n (async-channel-try-get channel))
-        (cond [n (cons n (loop))]
-              [else '()])))
-    (list 'success time messages)))
+  (define (time-taken)
+    (inexact->exact
+     (ceiling (- (current-inexact-milliseconds) t))))
+  (define (mk-cbk label)
+    (λ args (async-channel-put
+             channel
+             (cons label (cons (time-taken) args)))))
+  (define result
+    (with-handlers
+        ([exn:fail? (λ (exn)
+                      (list 'exn
+                            (- (current-inexact-milliseconds) t)
+                            (exn-message exn)))])  
+      (submit-assignment handin
+                         uid
+                         password
+                         "Program4"
+                         encoded-bytes
+                         (mk-cbk 'success)
+                         (mk-cbk 'message)
+                         (mk-cbk 'message-final)
+                         (mk-cbk 'message-box))
+      'success))
+  
+  ;; drain all messages from the async-channel:
+  (define messages
+    (let loop ()
+      (define n (async-channel-try-get channel))
+      (cond [n (cons n (loop))]
+            [else '()])))
+  (list result (time-taken) messages))
 
 (define results (make-async-channel))
-(for/list ([i (in-range 4)])
+(for/list ([i (in-range 1)])
   (sleep 1)
   (thread
    (λ () (async-channel-put results
