@@ -1,6 +1,6 @@
 #lang racket
 
-(require "client.rkt"
+(require 2188-csc430-handin/client
          racket/gui/base
          racket/async-channel
          racket/runtime-path)
@@ -10,10 +10,10 @@
 (define login-info
   (file->value
     (build-path here "private-login-info.rktd")))
-(define uid (dict-ref login-info 'uid))
-(define password (dict-ref login-info 'password))
-(define host (dict-ref login-info 'host))
-(define port (dict-ref login-info 'port))
+(define uid (first (dict-ref login-info 'uid)))
+(define password (first (dict-ref login-info 'password)))
+(define host (first (dict-ref login-info 'host)))
+(define port (first (dict-ref login-info 'port)))
 
 ;(handin-disconnect! handin)
 ;(handin-disconnect! handin)
