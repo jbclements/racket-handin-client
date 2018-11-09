@@ -34,7 +34,10 @@
 
   (send t load-file f)
 
-  (editors->string (list t)))
+  (define u (make-object text%))
+
+  (editors->string (list t u)))
+
 
 
 (define encoded-bytes
@@ -58,7 +61,7 @@
     (with-handlers
         ([exn:fail? (λ (exn)
                       (list 'exn
-                            (- (current-inexact-milliseconds) t)
+                            (time-taken)
                             (exn-message exn)))])  
       (submit-assignment handin
                          uid
