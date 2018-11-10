@@ -39,11 +39,19 @@
   (editors->string (list t u)))
 
 
-
+(define submit-dir "Program4a")
+(define grading-dir
+  (build-path "/Users/clements/430/Grading/Program4/shuffled-16"))
 (define encoded-bytes
   (file->encoded-string
-   "/Users/clements/430/Grading/Program4/shuffled-26/handin-text.rkt"
+   (build-path grading-dir "handin-text.rkt")
    #;"/Users/clements/430/Solutions/Program4/a4-tr-onefile-solution.rkt"))
+
+(define (copy-test-log-out)
+  (copy-file
+   (build-path "/tmp/handin-tmp" submit-dir "clements" "test-log.txt")
+   (build-path grading-dir "test-log.txt")
+   #t))
 
 ;; given a unique
 (define (run-submit)
@@ -66,7 +74,7 @@
       (submit-assignment handin
                          uid
                          password
-                         "Program4"
+                         submit-dir
                          encoded-bytes
                          (mk-cbk 'success)
                          (mk-cbk 'message)
@@ -80,6 +88,8 @@
       (define n (async-channel-try-get channel))
       (cond [n (cons n (loop))]
             [else '()])))
+  ;; really nothing to do with stress testing...,.
+  (copy-test-log-out)
   (list result (time-taken) messages))
 
 (define results (make-async-channel))
