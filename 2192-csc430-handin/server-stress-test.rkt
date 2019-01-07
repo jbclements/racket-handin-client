@@ -1,6 +1,6 @@
 #lang racket
 
-(require 2188-csc430-handin/client
+(require 2192-csc430-handin/client
          racket/gui/base
          racket/async-channel
          racket/runtime-path)
