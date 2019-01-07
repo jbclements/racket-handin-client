@@ -8,6 +8,8 @@ private, because no secrets are stored in it.
 
 There's a tag for each class.
 
+use git tag -m "message" to tag the commit, then push.
+
 ## Old:
 
 There's a different branch for each class. Honestly, tags might be a better
