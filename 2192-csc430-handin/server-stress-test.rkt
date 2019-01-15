@@ -10,10 +10,10 @@
 (define login-info
   (file->value
     (build-path here "private-login-info.rktd")))
-(define uid (first (dict-ref login-info 'uid)))
-(define password (first (dict-ref login-info 'password)))
-(define host (first (dict-ref login-info 'host)))
-(define port (first (dict-ref login-info 'port)))
+(define uid (dict-ref login-info 'uid))
+(define password (dict-ref login-info 'password))
+(define host (dict-ref login-info 'host))
+(define port (dict-ref login-info 'port))
 
 ;(handin-disconnect! handin)
 ;(handin-disconnect! handin)
@@ -39,13 +39,14 @@
   (editors->string (list t u)))
 
 
-(define submit-dir "Program4a")
+(define submit-dir "Program5")
 (define grading-dir
-  (build-path "/Users/clements/430/Grading/Program4/shuffled-16"))
+  "/tmp"
+  #;(build-path "/Users/clements/430/Grading/Program4/shuffled-16"))
 (define encoded-bytes
   (file->encoded-string
-   (build-path grading-dir "handin-text.rkt")
-   #;"/Users/clements/430/Solutions/Program4/a4-tr-onefile-solution.rkt"))
+   #;(build-path grading-dir "handin-text.rkt")
+   "/Users/clements/430/Solutions/Program5/a5-tr-singlefile-solution.rkt"))
 
 (define (copy-test-log-out)
   (copy-file
@@ -89,15 +90,19 @@
       (cond [n (cons n (loop))]
             [else '()])))
   ;; really nothing to do with stress testing...,.
-  (copy-test-log-out)
+  #;(copy-test-log-out)
   (list result (time-taken) messages))
 
+(define delay 0.0)
 (define results (make-async-channel))
-(for/list ([i (in-range 1)])
-  (sleep 1)
+(for/list ([i (in-range 5)]
+           [t (in-naturals)])
   (thread
-   (λ () (async-channel-put results
-                            (run-submit)))))
+   (λ () (begin
+           (sleep (* t delay))
+           (async-channel-put results
+                              (list (list 'sleep (* t delay))
+                                    (run-submit)))))))
 
 (let loop ()
   (define r (async-channel-get results))
