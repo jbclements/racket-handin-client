@@ -12,8 +12,10 @@ use git tag -m "message" <name-of-tag> to tag the commit, then push.
 
 E.G.
 
+```
 git tag -m "2194 handin client" 2194-csc430
 git push origin 2194-csc430
+```
 
 ## Old:
 
