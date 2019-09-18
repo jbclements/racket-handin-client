@@ -8,7 +8,7 @@ There's a tag for each class.
 
 1) Check certificate expiration with
 
-openssl x509 --text < server-cert.pem 
+openssl x509 -text < server-cert.pem 
 
 2) move directory to new collection name
 
