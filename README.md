@@ -14,7 +14,13 @@ openssl x509 --text < server-cert.pem
 
 3) update inner info.rkt
 
-4) use git tag -m "message" <name-of-tag> to tag the commit, then push.
+4) first push to master
+
+```
+git push
+```
+
+5) finally, use git tag -m "message" <name-of-tag> to tag the commit, then push.
 
 E.G.
 
