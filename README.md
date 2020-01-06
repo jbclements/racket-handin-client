@@ -10,6 +10,10 @@ There's a tag for each class.
 
 openssl x509 -text < server-cert.pem 
 
+If necessary, regen cert with
+
+openssl req -new -nodes -x509 -days 365 -out server-cert.pem -keyout private-key.pem
+
 2) move directory to new collection name
 
 3) update inner info.rkt
