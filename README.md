@@ -14,6 +14,10 @@ If necessary, regen cert with
 
 openssl req -new -nodes -x509 -days 365 -out server-cert.pem -keyout private-key.pem
 
+AND 
+
+move private-key.pem and server-cert.pem to handin directory
+
 2) move directory to new collection name
 
 3) update inner info.rkt
