@@ -37,3 +37,5 @@ git tag -m "2194 handin client" 2194-csc430
 git push origin 2194-csc430
 ```
 
+NB. The tag name here appears in the Lab 0 directions, so it has to be of the form <qtr>-<course>
+
