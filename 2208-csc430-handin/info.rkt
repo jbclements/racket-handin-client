@@ -15,14 +15,14 @@
 ;; Modify the provided "icon.png" file to your school/lab/etc logo.
 
 ;; You must define a server:port for the client to be functional
-(define server:port "handin-2192.brinckerhoff.org:7979")
+(define server:port "handin-1.brinckerhoff.org:7979")
 
 ;; The following are optional. Uncomment and fill in
 ;; the values to add a menu item under "Help" to open
 ;; the specified web page (using the user's chosen web
 ;; browser.)
 (define web-menu-name "Course Homepage")
-(define web-address "http://www.brinckerhoff.org/clements/2204-csc430/")
+(define web-address "http://www.brinckerhoff.org/clements/2208-csc430/")
 
 ;; Auto-updater section (see handin-server/doc.txt for details)
 ;(define enable-auto-update #t) ; enable auto-update?
