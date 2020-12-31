@@ -6,7 +6,9 @@ private, because no secrets are stored in it.
 
 There's a tag for each class.
 
-1) Check certificate expiration with
+1) cd $HANDIN_DIR
+
+2) Check certificate expiration with
 
 openssl x509 -text < server-cert.pem 
 
@@ -18,17 +20,17 @@ AND
 
 move private-key.pem and server-cert.pem to handin directory
 
-2) move directory to new collection name
+3) move directory to new collection name
 
-3) update inner info.rkt
+4) update inner info.rkt
 
-4) first push to master
+5) first push to master
 
 ```
 git push
 ```
 
-5) finally, use git tag -m "message" <name-of-tag> to tag the commit, then push.
+6) finally, use git tag -m "message" <name-of-tag> to tag the commit, then push.
 
 E.G.
 
