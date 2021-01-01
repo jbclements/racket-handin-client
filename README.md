@@ -14,11 +14,9 @@ openssl x509 -text < server-cert.pem
 
 If necessary, regen cert with
 
-openssl req -new -nodes -x509 -days 365 -out server-cert.pem -keyout private-key.pem
-
-AND 
-
-move private-key.pem and server-cert.pem to handin directory
+- `openssl req -new -nodes -x509 -days 365 -out server-cert.pem -keyout private-key.pem`
+- `mv private-key.pem ~/430/handin`
+- `cp server-cert.pem ~/430/handin`
 
 3) move directory to new collection name
 
