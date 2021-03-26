@@ -18,7 +18,7 @@ If necessary, regen cert with
 - `mv private-key.pem ~/430/handin`
 - `cp server-cert.pem ~/430/handin`
 
-3) move directory to new collection name
+3) git mv directory to new collection name
 
 4) update inner info.rkt
 
