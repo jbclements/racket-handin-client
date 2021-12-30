@@ -6,7 +6,7 @@ private, because no secrets are stored in it.
 
 There's a tag for each class.
 
-1) cd $HANDIN_DIR
+1) cd ~/430/handin
 
 2) Check certificate expiration with
 
@@ -16,7 +16,7 @@ If necessary, regen cert with
 
 - `openssl req -new -nodes -x509 -days 365 -out server-cert.pem -keyout private-key.pem`
 - `mv private-key.pem ~/430/handin`
-- `cp server-cert.pem ~/430/handin`
+- `cp server-cert.pem $THISREPO/<the-only-subdirectory>`
 
 3) git mv directory to new collection name
 
