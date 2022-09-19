@@ -4,13 +4,15 @@ racket-handin-client
 The plugin to allow handin in csc430. Note: this repo does not need to be
 private, because no secrets are stored in it.
 
-export RHC=`pwd`
+cd to top level of repo.
+
+1) export RHC=`pwd`
 
 There's a tag for each class.
 
-1) cd ~/<this-qtr>-430-handin/
+2) cd ~/<this-qtr>-430-handin/
 
-2) Check certificate expiration with
+3) Check certificate expiration with
 
 openssl x509 -text < server-cert.pem 
 
@@ -22,14 +24,14 @@ If necessary, regen cert with
 - `cp server-cert.pem $THISREPO/<the-only-subdirectory>`
 
 
-3) git mv directory to new collection name
+4) git mv directory to new collection name
 
 - `cd $RHC`
 - git mv 2222-csc430-handin 2224-csc430-handin
 
-4) update inner info.rkt
+5) update inner info.rkt
 
-5) first push to master
+6) first push to master
 
 ```
 git add .
@@ -37,7 +39,7 @@ git commit -m "updates for 2224"
 git push
 ```
 
-6) finally, use git tag -m "message" <name-of-tag> to tag the commit, then push.
+7) finally, use git tag -m "message" <name-of-tag> to tag the commit, then push.
 
 E.G.
 
