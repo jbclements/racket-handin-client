@@ -39,7 +39,7 @@ git commit -m "updates for 2224"
 git push
 ```
 
-7) finally, use git tag -m "message" <name-of-tag> to tag the commit, then push.
+7) finally, use git tag -m "2224 handin client" <name-of-tag> to tag the commit, then push.
 
 E.G.
 
