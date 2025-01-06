@@ -15,7 +15,7 @@
 ;; Modify the provided "icon.png" file to your school/lab/etc logo.
 
 ;; You must define a server:port for the client to be functional
-(define server:port "handin-1.brinckerhoff.org:7989")
+(define server:port "handin-1.brinckerhoff.org:7979")
 
 ;; The following are optional. Uncomment and fill in
 ;; the values to add a menu item under "Help" to open
