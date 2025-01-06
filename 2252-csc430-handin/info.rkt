@@ -5,7 +5,7 @@
 ;; Also replace the "server-cert.pem" files.
 
 ;; Your course name (used for menus, button label, collection name etc)
-(define name "CSC 530")
+(define name "CSC 430")
 
 ;; The handin tool is disabled by default, uncomment these three lines to
 ;; enable it
@@ -22,7 +22,7 @@
 ;; the specified web page (using the user's chosen web
 ;; browser.)
 (define web-menu-name "Course Homepage")
-(define web-address "http://www.brinckerhoff.org/clements/2248-csc530/")
+(define web-address "http://www.brinckerhoff.org/clements/2252-csc430/")
 
 ;; Auto-updater section (see handin-server/doc.txt for details)
 ;(define enable-auto-update #t) ; enable auto-update?
