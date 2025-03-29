@@ -3,15 +3,15 @@
 (require racket/runtime-path)
 
 (define-runtime-path here ".")
-(define prev-qtr 2248)
-(define this-qtr 2252)
+(define prev-qtr 2252)
+(define this-qtr 2254)
 (define course-num 430)
 (define subject "csc")
 
 ;; might not work for some courses duh
 (define course-id (~a subject course-num))
 
-(define handin-dir (build-path "~/" (~a prev-qtr "-" course-num "-handin")))
+(define prev-handin-dir (build-path "~/" (~a prev-qtr "-" course-num "-handin")))
 
 (define existing-subdir-name (~a prev-qtr "-" course-id "-handin"))
 (define new-subdir-name      (~a  this-qtr "-" course-id "-handin"))
@@ -20,13 +20,13 @@
   @list{
 cd to top level of repo.
 
-1) export RHC=`@here`
+1) export RHC="@here"
    or
    (define RHC '@|here|)
 
 There's a tag for each class.
 
-2) cd @|handin-dir|
+2) cd @|prev-handin-dir|
 
 3) Check certificate expiration with
 
@@ -37,7 +37,7 @@ If necessary, regen cert with
 - `cd $RHC`
 - `openssl req -new -nodes -x509 -years 5 -out server-cert.pem -keyout private-key.pem`
 - `mv private-key.pem ~/@|course-num|/Handin/`
-- `cp server-cert.pem ~/@|prev-qtr|-@|course-num|-handin`
+- `cp server-cert.pem ~/@|this-qtr|-@|course-num|-handin`
 
 
 4) git mv directory to new collection name
