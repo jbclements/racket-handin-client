@@ -3,8 +3,8 @@
 (require racket/runtime-path)
 
 (define-runtime-path here ".")
-(define prev-qtr 2254)
-(define this-qtr 2258)
+(define prev-qtr 2258)
+(define this-qtr 2262)
 (define course-num 430)
 (define subject "csc")
 
@@ -18,38 +18,33 @@
 
 (define content
   @list{
-cd to top level of repo.
-
-1) export RHC="@here"
-   or
-   (define RHC '@|here|)
 
 There's a tag for each class.
 
-2) cd @|prev-handin-dir|
+1) Check certificate expiration with
 
-3) Check certificate expiration with
-
-openssl x509 -text < server-cert.pem 
+openssl x509 -text < @|prev-handin-dir|/server-cert.pem 
 
 If necessary, regen cert with
 
-- `cd $RHC`
+- `cd @here`
 - `openssl req -new -nodes -x509 -years 5 -out server-cert.pem -keyout private-key.pem`
 - `mv private-key.pem ~/@|course-num|/Handin/`
 - `cp server-cert.pem ~/@|this-qtr|-@|course-num|-handin`
 
 
-4) git mv directory to new collection name
+2) git mv directory to new collection name
 
-- `cd $RHC`
-- `git mv @|existing-subdir-name| @|new-subdir-name|`
+- `cd @here && git mv @|existing-subdir-name| @|new-subdir-name|`
 
-5) update inner info.rkt
+3) update inner info.rkt
 
-6) first push to master
+- `dopen info.rkt`
+
+4) first push to master
 
 ```
+cd @here
 git add .
 git commit -m "updates for @|this-qtr|"
 git push
@@ -57,9 +52,11 @@ git push
 
 7) finally, tag the commit and push
 
-- `git tag -m "@|this-qtr| handin client" @|this-qtr|-@|course-id|`
-- `git push origin @|this-qtr|-@|course-id|`
-
+```
+cd @here
+git tag -m "@|this-qtr| handin client" @|this-qtr|-@|course-id|
+git push origin @|this-qtr|-@|course-id|
+```
 
 NB. The tag name here appears in the Lab 0 directions, so it has to be of the form <qtr>-<course>
 })
