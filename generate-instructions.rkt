@@ -27,19 +27,23 @@ openssl x509 -text < @|prev-handin-dir|/server-cert.pem
 
 If necessary, regen cert with
 
-- `cd @here`
-- `openssl req -new -nodes -x509 -years 5 -out server-cert.pem -keyout private-key.pem`
-- `mv private-key.pem ~/@|course-num|/Handin/`
-- `cp server-cert.pem ~/@|this-qtr|-@|course-num|-handin`
-
+```
+cd @here`
+openssl req -new -nodes -x509 -years 5 -out server-cert.pem -keyout private-key.pem
+mv private-key.pem ~/@|course-num|/Handin/
+cp server-cert.pem ~/@|this-qtr|-@|course-num|-handin
+```
 
 2) git mv directory to new collection name
 
-- `cd @here && git mv @|existing-subdir-name| @|new-subdir-name|`
+
+cd @here && git mv @|existing-subdir-name| @|new-subdir-name|
 
 3) update inner info.rkt
 
-- `dopen info.rkt`
+```
+dopen @|here|/@|new-subdir-name|/info.rkt
+```
 
 4) first push to master
 
