@@ -5,7 +5,7 @@
 (define-runtime-path here ".")
 (define prev-qtr 2264)
 (define this-qtr 2268)
-(define course-num 3330)
+(define course-num 3300)
 (define subject "csc")
 
 ;; might not work for some courses duh
