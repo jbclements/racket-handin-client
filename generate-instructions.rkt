@@ -3,9 +3,9 @@
 (require racket/runtime-path)
 
 (define-runtime-path here ".")
-(define prev-qtr 2262)
-(define this-qtr 2264)
-(define course-num 430)
+(define prev-qtr 2264)
+(define this-qtr 2268)
+(define course-num 3330)
 (define subject "csc")
 
 ;; might not work for some courses duh
